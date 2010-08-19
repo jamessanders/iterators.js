@@ -5,6 +5,7 @@ function __makeIterators (env) {
     ////////////////////////////////////////////////////////////////////////
 
     function StopIteration () { return true };
+    env.StopIteration = StopIteration;
 
     function ListIterator (ls) {
         var i = 0;
@@ -47,6 +48,17 @@ function __makeIterators (env) {
         }
     }
     
+    function ObjectIterator (obj) {
+        var ls = [];
+        for (k in obj) {
+            if (obj.hasOwnProperty(k)){
+                ls.push([k, obj[k]]);
+            }
+        }
+        var it = new ListIterator(ls);
+        this.next = function () { return it.next() };
+    }
+
     function NullIterator () {
         this.next = function () { return StopIteration };
     };
@@ -62,16 +74,17 @@ function __makeIterators (env) {
         this.next = function () { return i++ };
     };
 
+    Object.prototype.toIterator = function () { return (new ObjectIterator(this)); };
+    Array.prototype.toIterator  = function () { return (new ListIterator(this)); };
 
-    Array.prototype.toIterator = function () { return (new ListIterator(this)); };
-
-    var makeIterator = function (obj) { 
+    var Iterator = function (obj) { 
         if (obj != undefined) {
             return obj.hasOwnProperty("next") ? obj : obj.toIterator(); 
         } else {
             return (new NullIterator());
         }
     };
+    env.Iterator = Iterator;
 
     function Enumerator (iterator, accum) {
         this.stop = false;
@@ -97,12 +110,12 @@ function __makeIterators (env) {
     }
 
     var zip = function zip (a, b) { 
-        return (new ZipIterator(makeIterator(a),makeIterator(b))); 
+        return (new ZipIterator(Iterator(a),Iterator(b))); 
     };
     env.zip = zip;
 
     var cycle = function cycle(ls) {
-        return (new CycleIterator(makeIterator(ls)));
+        return (new CycleIterator(Iterator(ls)));
     };
     env.cycle = cycle;
 
@@ -112,19 +125,19 @@ function __makeIterators (env) {
     env.range = range;
     
     var toList = function (obj) { 
-        var iterator = makeIterator(obj);
+        var iterator = Iterator(obj);
         return map(function(b){ return b; }, iterator); 
     };
     env.toList = toList;
 
     var each = function each (obj, fn) {
-        var iterator = makeIterator(obj);
+        var iterator = Iterator(obj);
         return (new Enumerator(iterator, undefined).run(function(a,b) { return fn.call(this, b) }));
     };
     env.each = each;
 
     var map = function map (fn, obj) {
-        var iterator = makeIterator(obj);
+        var iterator = Iterator(obj);
         var en = new Enumerator(iterator, []);
         return en.run(function(a,b) {
             return a.concat([fn.call(this,b)]);
@@ -133,7 +146,7 @@ function __makeIterators (env) {
     env.map  = map;
 
     var fold = function fold (fn, def, obj) {
-        var iterator = makeIterator(obj);
+        var iterator = Iterator(obj);
         var en = new Enumerator(iterator, def);
         return en.run(fn);
     };
@@ -148,3 +161,4 @@ function globalLoadIterators () {
     }
 };
 
+globalLoadIterators();
