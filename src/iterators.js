@@ -78,9 +78,9 @@ function __makeIterators (env) {
         if (obj != undefined && obj.hasOwnProperty("next")) {
             return obj
         } else if (obj instanceof Array) {
-            return (new ListIterator(this));
+            return (new ListIterator(obj));
         } else if (obj instanceof Object) {
-            return (new ObjectIterator(this));
+            return (new ObjectIterator(obj));
         } else {
             return (new NullIterator());
         }
