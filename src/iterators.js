@@ -74,12 +74,13 @@ function __makeIterators (env) {
         this.next = function () { return i++ };
     };
 
-    Object.prototype.toIterator = function () { return (new ObjectIterator(this)); };
-    Array.prototype.toIterator  = function () { return (new ListIterator(this)); };
-
     var Iterator = function (obj) { 
         if (obj != undefined) {
             return obj.hasOwnProperty("next") ? obj : obj.toIterator(); 
+        } else if (obj instanceof Array) {
+            return (new ListIterator(this));
+        } else if (obj instanceof Object) {
+            return (new ObjectIterator(this));
         } else {
             return (new NullIterator());
         }
@@ -107,6 +108,34 @@ function __makeIterators (env) {
             }
             return this.accum;
         };
+    }
+
+    function AsyncEnumerator (iterator, accum, callback) {
+        this.stop = false;
+        this.accum = accum;
+        this.end = function (ret) {
+            this.stop = true;
+            if (ret != undefined) {
+                this.accum = ret;
+            }
+        };
+
+      this.run = function (fn) {
+          var self = this;
+          var n = iterator.next();
+          if (n != StopIteration && !this.stop) {
+              fn.call(this, this.accum, n, function (ret) {
+                  if (!self.stop) {
+                      self.accum = ret;
+                      self.run(fn);
+                  } else {
+                      callback(self.accum);
+                  }
+              });
+          } else {
+              callback(this.accum);
+          }
+      }
     }
 
     var zip = function zip (a, b) { 
@@ -137,8 +166,7 @@ function __makeIterators (env) {
     env.each = each;
 
     var map = function map (fn, obj) {
-        var iterator = Iterator(obj);
-        var en = new Enumerator(iterator, []);
+        var en = new Enumerator(Iterator(obj), []);
         return en.run(function(a,b) {
             return a.concat([fn.call(this,b)]);
         });
@@ -146,9 +174,7 @@ function __makeIterators (env) {
     env.map  = map;
 
     var fold = function fold (fn, def, obj) {
-        var iterator = Iterator(obj);
-        var en = new Enumerator(iterator, def);
-        return en.run(fn);
+        return (new Enumerator(Iterator(obj), def)).run(fn);
     };
     env.fold = fold;
 }
