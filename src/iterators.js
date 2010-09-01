@@ -74,6 +74,7 @@ function __makeIterators (env) {
         this.next = function () { return i++ };
     };
 
+
     var Iterator = function (obj) { 
         if (obj != undefined && obj.hasOwnProperty("next")) {
             return obj
@@ -118,7 +119,7 @@ function __makeIterators (env) {
             if (ret != undefined) {
                 this.accum = ret;
             }
-            callback(this.accum);
+            if (callback) callback(this.accum);
         };
 
       this.run = function (fn) {
@@ -130,11 +131,11 @@ function __makeIterators (env) {
                       self.accum = ret;
                       self.run(fn);
                   } else {
-                      callback(self.accum);
+                      if (callback) callback(self.accum);
                   }
               });
           } else {
-              callback(this.accum);
+              if (callback) callback(this.accum);
           }
       }
     }
