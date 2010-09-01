@@ -118,6 +118,7 @@ function __makeIterators (env) {
             if (ret != undefined) {
                 this.accum = ret;
             }
+            callback(this.accum);
         };
 
       this.run = function (fn) {
@@ -137,6 +138,32 @@ function __makeIterators (env) {
           }
       }
     }
+    env.AsyncEnumerator = AsyncEnumerator;
+
+    function foldAsync (fn, start, iterator, next) {
+        return (new AsyncEnumerator(Iterator(iterator), start, next)).run(fn);
+    }
+    env.foldAsync = foldAsync;
+
+    function mapAsync (fn, iterator, next) {
+        var ae = new AsyncEnumerator (Iterator(iterator), [], next);
+        return ae.run(function (a, b, next) {
+            fn.call(this, b, function (x) {
+                return next (a.concat(x));
+            });
+        });
+    };
+    env.mapAsync = mapAsync;
+
+    function eachAsync (iterator, fn, next) {
+        var ae = new AsyncEnumerator (Iterator(iterator), [], next);
+        return ae.run(function (a, b, next) {
+            fn.call(this, b, function (x) {
+                return next (x);
+            });
+        }); 
+    };
+    env.eachAsync = eachAsync;
 
     var zip = function zip (a, b) { 
         return (new ZipIterator(Iterator(a),Iterator(b))); 
