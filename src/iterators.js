@@ -214,4 +214,9 @@ function globalLoadIterators () {
     }
 };
 
-globalLoadIterators();
+if (exports) {
+    exports.globalLoadIterators = globalLoadIterators;
+    __makeIterators (exports);
+} else {
+    globalLoadIterators();
+}
