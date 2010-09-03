@@ -215,7 +215,7 @@ function globalLoadIterators () {
     }
 };
 
-if (exports) {
+if (typeof(exports) == "undefined") {
     exports.globalLoadIterators = globalLoadIterators;
     __makeIterators (exports);
 } else {
