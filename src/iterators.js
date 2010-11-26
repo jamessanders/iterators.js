@@ -207,17 +207,11 @@ function __makeIterators (env) {
     env.fold = fold;
 }
 
-function globalLoadIterators () {
-    try {
-        __makeIterators(window);
-    } catch (err) {
-        __makeIterators(global);
-    }
-};
-
+// if commonJS then make iterators a standard module
 if (exports) {
     exports.globalLoadIterators = globalLoadIterators;
     __makeIterators (exports);
-} else {
-    globalLoadIterators();
+} elseif (window) {
+  window.iterators = {}
+  __makeIterators(window.iterators);
 }
