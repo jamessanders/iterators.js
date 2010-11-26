@@ -53,7 +53,7 @@ function is often called "reduce" in other languages thought I feel fold is
 more accurate.  `fold` builds up a new value by fold over the iterator.  For
 example:
 
-    fold(new ListIterator([1,2,3]), 0, function(a, b) {
+    iterators.fold(new iterators.ListIterator([1,2,3]), 0, function(a, b) {
         return a + b;
     });
 
@@ -64,7 +64,7 @@ that thought we specifically created a new ListIterator in the above example
 `map` - Takes as arguments a function and an iterator.  Map simply maps a
 function over an iterator.  For example:
 
-    map([1,2,3], function (a) { return a + 2 });
+    iterators.map([1,2,3], function (a) { return a + 2 });
     
 The above example will add 2 to every item in the iterator return the array
 ([3, 4, 5]).
@@ -73,7 +73,7 @@ The above example will add 2 to every item in the iterator return the array
 map except that it returns nothing (technically).  Each should generally be
 used only to perform some sort of side effect.
 
-    each([1,2,3], function (a) { console.log(a) });
+    iterators.each([1,2,3], function (a) { console.log(a) });
     
 The above example will write the numbers 1, 2 and 3 to the console.
       
@@ -88,7 +88,7 @@ continuation function.  The callback function should take as arguments the
 accumulated value the current iteration and a continuation function.  The
 asynchronous version of the example above would look like the following.
 
-    foldASync(new ListIterator([1,2,3]), 0, function(a, b, next) {
+    iterators.foldASync(new iterators.ListIterator([1,2,3]), 0, function(a, b, next) {
         next(a + b);
     }, function(a) { console.log(a) });
 
@@ -97,14 +97,15 @@ function.  The callback function should take the current iteration and a
 continuation function.  The asynchronous version of the above example would
 look as follows.
 
-    mapAsync([1,2,3], function(a, next) { 
+    iterators.mapAsync(function(a, next) { 
                         next(a + 2) 
-                      }, function (a) { console.log(a) });
+                      }, [1,2,3], function (a) { console.log(a) });
 
 `eachAsync` - Is basically the same as mapAsync but with its arguments
 reversed.
 
-    each([1,2,3], function (a) { console.log(a); next() });
+    iterators.eachAsync([1,2,3], function (a) { console.log(a); next() },
+    function (a) { console.log(a) });
     
 ### Enumerator tricks ###
 
@@ -113,3 +114,10 @@ are ran with `this` set to the enumerator object.  This little hack allows one
 to escape the enumerator early but calling `this.end(v)` from within a
 callback.  If one provides an argument to `this.end` then that argument is
 considered that last returned value from the callback.
+
+### Notes
+
+Works with node.js just require it like any other module.
+
+    var iterators = require("iterators.js");
+
