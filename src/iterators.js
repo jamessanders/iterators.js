@@ -1,5 +1,20 @@
 function __makeIterators (env) {
 
+  var argsToArray = function (args){
+    var out = [];
+    for (var i = 0; i < args.length; i++) out.push(args[i]);
+    return out;
+  };
+  
+  Function.prototype.curry = function (){
+    var that = this;
+    var thoseArgs = Array.prototype.slice.call(arguments, 0);
+    return function(){
+      var comArgs = thoseArgs.concat(Array.prototype.slice.call(arguments, 0));
+      return that.apply(this,comArgs);
+    };
+  };
+
   ////////////////////////////////////////////////////////////////////////
   // Iterators 
   ////////////////////////////////////////////////////////////////////////
@@ -216,7 +231,6 @@ function __makeIterators (env) {
 
 // if commonJS then make iterators a standard module
 if (typeof(exports) !== "undefined") {
-    exports.globalLoadIterators = globalLoadIterators;
     __makeIterators (exports);
 } else if (typeof(window) !== "undefined") {
   window.iterators = {};
