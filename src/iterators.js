@@ -6,7 +6,7 @@ function __makeIterators (env) {
     return out;
   };
   
-  Function.prototype.curry = function (){
+  Function.prototype.partial = function (){
     var that = this;
     var thoseArgs = Array.prototype.slice.call(arguments, 0);
     return function(){

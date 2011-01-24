@@ -3,6 +3,6 @@
   "description": "",
   "version": "0.0.1",
   "author": "James Sanders",
-  "directories": { "lib": "src" },
+  "directories": { "lib": "./src" },
   "engines": { "node": ">= 0.2.4" }
 }
