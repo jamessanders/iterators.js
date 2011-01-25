@@ -196,10 +196,10 @@ function __makeIterators (env) {
   env.eachAsync = eachAsync;
 
   function filter (fn, iterator) {
-    return fold(iterator, [], function (a, b) {
-      if (fn(a)) return a.concat(b);
+    return fold(function (a, b) {
+      if (!fn(a)) return a.concat(b);
       else return a
-    });
+    },[], iterator);
   };
   env.filter = filter;
 
