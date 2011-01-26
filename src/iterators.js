@@ -197,7 +197,7 @@ function __makeIterators (env) {
 
   function filter (fn, iterator) {
     return fold(function (a, b) {
-      if (!fn(a)) return a.concat(b);
+      if (!fn(b)) return a.concat(b);
       else return a
     },[], iterator);
   };
