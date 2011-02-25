@@ -24,6 +24,13 @@ function __makeIterators (env) {
 
   function ListIterator (ls) {
     var i = 0;
+    this.toList = function () {
+      return ls;
+    }
+    this.back = function () {
+      i -= 1;
+      return this;
+    }
     this.next = function () {
       if (i < ls.length)
         return ls[i++];

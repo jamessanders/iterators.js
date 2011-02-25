@@ -21,7 +21,7 @@ eachAsync (["test1.txt","test2.txt"],
            function (file, next) {
                var self = this;
                fs.readFile(file, function(err,data) { 
-                   if (data == "Hello\n") {
+                   if (data == "newHello\n") {
                        sys.debug("ENDING");
                        self.end(data);
                    } else {
