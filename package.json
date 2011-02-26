@@ -1,7 +1,7 @@
 {
   "name": "iterators",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "author": "James Sanders",
   "directories": { "lib": "./src" },
   "engines": { "node": ">= 0.2.4" }
